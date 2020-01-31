@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
+import '../screens/product_detail_screen.dart';
+import 'package:section8_app/screens/products_overview_screen.dart';
 import '../models/product.dart';
 
 class ProductOverviewItem extends StatelessWidget {
   final String imageUrl;
   final String title;
+  final String id;
 
-  ProductOverviewItem({this.title, this.imageUrl});
+  ProductOverviewItem({this.title, this.imageUrl,this.id});
 
   @override
   Widget build(BuildContext context) {
@@ -13,9 +16,14 @@ class ProductOverviewItem extends StatelessWidget {
       borderRadius: BorderRadius.circular(15),
       child: GridTile(
         child: Container(
-          child: Image.network(
-            imageUrl,
-            fit: BoxFit.cover,
+          child: GestureDetector(
+            onTap: (){
+              Navigator.of(context).pushNamed(ProductDetailScreen.routeName,arguments: id);
+            },
+            child: Image.network(
+              imageUrl,
+              fit: BoxFit.cover,
+            ),
           ),
         ),
         footer: GridTileBar(
@@ -38,7 +46,7 @@ class ProductOverviewItem extends StatelessWidget {
           trailing: IconButton(
             icon: Icon(Icons.shopping_cart),
             onPressed: () {},
-            color:Theme.of(context).accentColor,
+            color: Theme.of(context).accentColor,
           ),
         ),
       ),
