@@ -1,5 +1,9 @@
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
-import '../models/product.dart';
+import './product.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 
 class Products with ChangeNotifier {
 //  The List of items
@@ -45,13 +49,56 @@ class Products with ChangeNotifier {
   }
 
 // The above is done since widgets must be notified with the changes in the data hence we cannot allow widgets to update the item list insted we allow it using a method :
-  void addProduct() {
-    // _items.add(Product());
-    // The below code will notify all the listners !
-    notifyListeners();
+  Future<void> addProduct(Product product) {
+    const url = "https://flutter-d0945.firebaseio.com/products.json";
+    return http
+        .post(
+      url,
+      body: json.encode(
+        {
+          'title': product.title,
+          'description': product.description,
+          'price': product.price,
+          'isFavorite': product.isFavorite,
+          'imageUrl': product.imageUrl
+        },
+      ),
+    )
+        .then((response) {
+      Product newProduct = new Product(
+        id: json.decode(response.body)['name'],
+        title: product.title,
+        price: product.price,
+        description: product.description,
+        imageUrl: product.imageUrl,
+      );
+      _items.add(newProduct);
+      // The below code will notify all the listners !
+      notifyListeners();
+    }).catchError((error){
+      print("error");
+      throw error;
+    });
+  }
+
+  List<Product> get favitems {
+    return _items.where((product) => product.isFavorite == true).toList();
   }
 
   Product findById(String id) {
     return _items.firstWhere((product) => product.id == id);
+  }
+
+  void updateItem(String id, Product product) {
+    var index = _items.indexWhere((prod) {
+      return prod.id == product.id;
+    });
+    _items[index] = product;
+  }
+
+  void deleteItem(String id) {
+    _items.removeWhere((prod) => prod.id == id);
+
+    notifyListeners();
   }
 }

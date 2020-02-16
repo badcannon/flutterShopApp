@@ -1,6 +1,9 @@
 import 'package:flutter/foundation.dart';
 
-class Product {
+
+// Implementing the ChangeNotifier so that we can listen to changes in the isFavorite or any other parameter / 
+
+class Product with ChangeNotifier{
   final String id;
   final String title;
   final String description;
@@ -16,4 +19,9 @@ class Product {
     @required this.imageUrl,
     this.isFavorite = false,
   });
+
+  void toggleFavorite(){
+    isFavorite = !isFavorite;
+    notifyListeners();
+  }
 }
