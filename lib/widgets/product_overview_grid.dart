@@ -20,7 +20,7 @@ class ProductOverviewGrid extends StatelessWidget {
           crossAxisSpacing: 20,
           mainAxisSpacing: 20),
       itemBuilder: (_, index) {
-        return new Container(
+        return Container(
           child: ChangeNotifierProvider.value(
             // create: (bctx) => products[index],
             value: products[index],

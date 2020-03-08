@@ -36,18 +36,7 @@ class CartScreen extends StatelessWidget {
                     ),
                     backgroundColor: Theme.of(context).primaryColor,
                   ),
-                  FlatButton(
-                    child: Text('ORDER NOW'),
-                    onPressed: () {
-                      Provider.of<Orders>(context, listen: false).addOrders(
-                        id: DateTime.now().toString(),
-                        totalAmount: cart.total.toString(),
-                        cartItems: cart.items.values.toList(),
-                      );
-                      cart.clear();
-                    },
-                    textColor: Theme.of(context).primaryColor,
-                  )
+                  OrderButton(cart: cart)
                 ],
               ),
             ),
@@ -67,6 +56,62 @@ class CartScreen extends StatelessWidget {
           )
         ],
       ),
+    );
+  }
+}
+
+class OrderButton extends StatefulWidget {
+  const OrderButton({
+    Key key,
+    @required this.cart,
+  }) : super(key: key);
+
+  final Cart cart;
+
+  @override
+  _OrderButtonState createState() => _OrderButtonState();
+}
+
+class _OrderButtonState extends State<OrderButton> {
+  var _isLoading = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return FlatButton(
+      child: _isLoading ? CircularProgressIndicator() : Text('ORDER NOW'),
+      onPressed: widget.cart.total <= 0 || _isLoading
+          ? null
+          : () async {
+              setState(() {
+                _isLoading = true;
+              });
+              try {
+                await Provider.of<Orders>(context, listen: false).addOrders(
+                  totalAmount: widget.cart.total.toString(),
+                  cartItems: widget.cart.items.values.toList(),
+                );
+                widget.cart.clear();
+              } catch (error) {
+                showDialog(
+                    context: context,
+                    builder: (bctx) => AlertDialog(
+                          content: Text("Something went wrong !"),
+                          title: Text("Error"),
+                          actions: <Widget>[
+                            FlatButton(
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                              child: Text("Ok"),
+                            )
+                          ],
+                        ));
+              }
+              setState(() {
+                _isLoading = false;
+              });
+            },
+      textColor: Theme.of(context).primaryColor,
     );
   }
 }

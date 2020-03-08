@@ -1,9 +1,12 @@
+import 'dart:convert';
+
 import 'package:flutter/foundation.dart';
 
+import 'package:http/http.dart' as http;
 
-// Implementing the ChangeNotifier so that we can listen to changes in the isFavorite or any other parameter / 
+// Implementing the ChangeNotifier so that we can listen to changes in the isFavorite or any other parameter /
 
-class Product with ChangeNotifier{
+class Product with ChangeNotifier {
   final String id;
   final String title;
   final String description;
@@ -20,8 +23,24 @@ class Product with ChangeNotifier{
     this.isFavorite = false,
   });
 
-  void toggleFavorite(){
+  Future<void> toggleFavorite(String token, String userId) async {
+    var oldIsfav = isFavorite;
     isFavorite = !isFavorite;
     notifyListeners();
+    final url =
+        "https://flutter-d0945.firebaseio.com/userFavs/$userId/$id.json?auth=$token";
+    var response = await http
+        .put(
+      url,
+      body: json.encode(isFavorite),
+    )
+        .catchError((_) {
+      isFavorite = oldIsfav;
+      notifyListeners();
+    });
+      if (response.statusCode >= 400) {
+      isFavorite = oldIsfav;
+      notifyListeners();
+    }
   }
 }

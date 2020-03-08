@@ -5,6 +5,7 @@ import 'package:section8_app/widgets/drawer_items.dart';
 import '../widgets/product_overview_grid.dart';
 import '../widgets/cart_icon.dart';
 import '../screens/cart_screen.dart';
+import '../providers/products_provider.dart';
 
 enum FiltersOption {
   All,
@@ -13,13 +14,40 @@ enum FiltersOption {
 
 class ProductsOverviewScreen extends StatefulWidget {
   // Route name for the home page
-  static const routeName = "/";
+  static const routeName = "/product-overview";
 
   @override
   _ProductsOverviewScreenState createState() => _ProductsOverviewScreenState();
 }
 
 class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
+  var _isLoaded = false;
+
+  var _loadingInd = false;
+  @override
+  void initState() {
+    // Future.delayed(Duration.zero).then((_) {
+    //   Provider.of<Products>(context).fetchProducts();
+    // });
+    super.initState();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_isLoaded) {
+      setState(() {
+        _loadingInd = true;
+      });
+      Provider.of<Products>(context, listen: false).fetchProducts().then((_) {
+        setState(() {
+          _loadingInd = false;
+        });
+      });
+      _isLoaded = true;
+    }
+  }
+
   var favsOnly = false;
   @override
   Widget build(BuildContext context) {
@@ -74,9 +102,17 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
         ],
       ),
       drawer: Drawer(
-        child: DrawerItems(),  
+        child: DrawerItems(),
       ),
-      body: ProductOverviewGrid(favsOnly),
+      body: _loadingInd
+          ? Center(child: CircularProgressIndicator())
+          : RefreshIndicator(
+              onRefresh: () {
+                return Provider.of<Products>(context, listen: false)
+                    .fetchProducts();
+              },
+              child: ProductOverviewGrid(favsOnly),
+            ),
     );
   }
 }

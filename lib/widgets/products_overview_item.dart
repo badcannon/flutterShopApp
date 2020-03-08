@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../screens/product_detail_screen.dart';
 import '../providers/product.dart';
 import '../providers/cart.dart';
+import '../providers/auth.dart';
 
 class ProductOverviewItem extends StatelessWidget {
   // final String imageUrl;
@@ -50,7 +51,9 @@ class ProductOverviewItem extends StatelessWidget {
               icon: Icon(
                   product.isFavorite ? Icons.favorite : Icons.favorite_border),
               onPressed: () {
-                product.toggleFavorite();
+                product.toggleFavorite(
+                    Provider.of<Auth>(context, listen: false).token,
+                    Provider.of<Auth>(context,listen: false).userId);
               },
               color: Theme.of(context).accentColor,
             ),
@@ -66,9 +69,11 @@ class ProductOverviewItem extends StatelessWidget {
               Scaffold.of(context).showSnackBar(
                 SnackBar(
                   content: Text("You added an Item to the cart !"),
-                  action: SnackBarAction(label: 'UNDO', onPressed: (){
-                  cart.removeSingleItem(product.id);
-                  }),
+                  action: SnackBarAction(
+                      label: 'UNDO',
+                      onPressed: () {
+                        cart.removeSingleItem(product.id);
+                      }),
                   duration: Duration(seconds: 2),
                 ),
               );

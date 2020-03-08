@@ -94,11 +94,28 @@ class _EditProductScreenState extends State<EditProductScreen> {
     _form.currentState.save();
     if (_editedProduct.id != null) {
       Provider.of<Products>(context, listen: false)
-          .updateItem(_editedProduct.id, _editedProduct);
+          .updateItem(_editedProduct.id, _editedProduct)
+          .catchError((_) {
+        return showDialog(
+            context: context,
+            builder: (bctx) => AlertDialog(
+                  actions: <Widget>[
+                    FlatButton(
+                      child: Text("Okay"),
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                    )
+                  ],
+                  content: Text("Looks like something went wrong :("),
+                  title: Text("Something Went Wrong !"),
+                ));
+      }).then((_) {
+        Navigator.of(context).pop();
+      });
       setState(() {
         _isLoading = true;
       });
-      Navigator.of(context).pop();
     } else {
       Provider.of<Products>(context, listen: false)
           .addProduct(_editedProduct)
@@ -110,8 +127,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                     FlatButton(
                       child: Text("Okay"),
                       onPressed: () {
-                        Navigator.of(context).popUntil(ModalRoute.withName(
-                            UserProductEditScreen.routeName));
+                        Navigator.of(context).pop();
                       },
                     )
                   ],

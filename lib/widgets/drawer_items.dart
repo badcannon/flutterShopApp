@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:section8_app/screens/orders_screen.dart';
 import '../screens/user_product_edit_screen.dart';
+import '../providers/auth.dart';
+
 class DrawerItems extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -48,7 +51,7 @@ class DrawerItems extends StatelessWidget {
           ),
         ),
         // Divider(thickness: 1.2,color: Theme.of(context).accentColor,),
-         Container(
+        Container(
           color: Theme.of(context).primaryColorLight,
           child: ListTile(
             onTap: () {
@@ -66,11 +69,13 @@ class DrawerItems extends StatelessWidget {
                     color: Theme.of(context).accentColor)),
           ),
         ),
-           Container(
+        Divider(),
+        Container(
           color: Theme.of(context).primaryColorLight,
           child: ListTile(
             onTap: () {
-              Navigator.of(context).pushReplacementNamed(UserProductEditScreen.routeName);
+              Navigator.of(context)
+                  .pushReplacementNamed(UserProductEditScreen.routeName);
             },
             leading: Icon(
               Icons.edit_attributes,
@@ -78,6 +83,25 @@ class DrawerItems extends StatelessWidget {
               color: Theme.of(context).accentColor,
             ),
             title: Text("Manage Products",
+                style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 20,
+                    color: Theme.of(context).accentColor)),
+          ),
+        ),
+        Container(
+          color: Theme.of(context).primaryColorLight,
+          child: ListTile(
+            onTap: () {
+              Navigator.of(context).pop();
+              Provider.of<Auth>(context, listen: false).logout();
+            },
+            leading: Icon(
+              Icons.exit_to_app,
+              size: 30,
+              color: Theme.of(context).accentColor,
+            ),
+            title: Text("Logout",
                 style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 20,
