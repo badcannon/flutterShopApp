@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:section8_app/screens/orders_screen.dart';
+import 'package:section8_app/helpers/custom_page_transition.dart';
+import '../screens/orders_screen.dart';
 import '../screens/user_product_edit_screen.dart';
 import '../providers/auth.dart';
 
@@ -37,6 +38,8 @@ class DrawerItems extends StatelessWidget {
           child: ListTile(
             onTap: () {
               Navigator.of(context).pushReplacementNamed(OrderScreen.routeName);
+              // Navigator.of(context).pushReplacement(
+              //     CustomPageRoute(builder: (ctx) => OrderScreen()));
             },
             leading: Icon(
               Icons.credit_card,
